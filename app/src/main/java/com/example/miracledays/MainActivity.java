@@ -1,14 +1,14 @@
 package com.example.miracledays;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
+import android.widget.Button;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.example.miracledays.fragments.ManageFragment;
-import com.example.miracledays.fragments.RoutineFragment;
 import com.example.miracledays.fragments.TaskFragment;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.miracledays.fragments.RoutineFragment;
+import com.example.miracledays.fragments.ManageFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,27 +22,21 @@ public class MainActivity extends AppCompatActivity {
             loadFragment(new TaskFragment());
         }
 
-        // BottomNavigationView 설정
-        BottomNavigationView navigationView = findViewById(R.id.navigation);
-        navigationView.setOnItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.navigation_task:
-                    loadFragment(new TaskFragment());
-                    return true;
-                case R.id.navigation_routine:
-                    loadFragment(new RoutineFragment());
-                    return true;
-                case R.id.navigation_manage:
-                    loadFragment(new ManageFragment());
-                    return true;
-            }
-            return false;
-        });
+        // 버튼 설정
+        Button btnTask = findViewById(R.id.btn_task);
+        Button btnRoutine = findViewById(R.id.btn_routine);
+        Button btnManage = findViewById(R.id.btn_manage);
+
+        // 버튼 클릭 이벤트 처리
+        btnTask.setOnClickListener(v -> loadFragment(new TaskFragment()));
+        btnRoutine.setOnClickListener(v -> loadFragment(new RoutineFragment()));
+        btnManage.setOnClickListener(v -> loadFragment(new ManageFragment()));
     }
 
-    // Fragment 전환 함수
+    // Fragment 교체 메서드
     private void loadFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
+        getSupportFragmentManager()
+                .beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit();
     }

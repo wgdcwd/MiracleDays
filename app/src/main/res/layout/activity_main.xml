@@ -2,17 +2,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Fragment Container -->
+    <!-- Fragment 컨테이너 -->
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_above="@+id/navigation_bar" />
 
-    <!-- Bottom Navigation -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/navigation"
+    <!-- 하단 네비게이션 바 -->
+    <LinearLayout
+        android:id="@+id/navigation_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        app:menu="@menu/navigation_menu" />
+        android:orientation="horizontal"
+        android:weightSum="3"
+        android:background="#DDDDDD">
+
+        <Button
+            android:id="@+id/btn_task"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="할 일" />
+
+        <Button
+            android:id="@+id/btn_routine"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="루틴" />
+
+        <Button
+            android:id="@+id/btn_manage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="관리" />
+    </LinearLayout>
 </RelativeLayout>
