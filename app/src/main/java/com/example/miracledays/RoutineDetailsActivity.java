@@ -1,22 +1,23 @@
 package com.example.miracledays;
 
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.miracledays.models.Routine;
-import com.example.miracledays.models.Task;
+import com.example.miracledays.models.RoutineHistory;
 import com.example.miracledays.utils.DataManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RoutineDetailsActivity extends AppCompatActivity {
 
     private TextView routineNameText;
-    private LinearLayout taskContainer;
+    private LinearLayout historyContainer;
 
     private DataManager dataManager;
     private Routine currentRoutine;
@@ -32,12 +33,12 @@ public class RoutineDetailsActivity extends AppCompatActivity {
         currentRoutine = getRoutineById(routineId);
 
         setupViews();
-        loadTasks();
+        loadHistory();
     }
 
     private void setupViews() {
         routineNameText = findViewById(R.id.text_routine_name);
-        taskContainer = findViewById(R.id.linear_task_container);
+        historyContainer = findViewById(R.id.linear_history_container);
 
         if (currentRoutine != null) {
             routineNameText.setText(currentRoutine.getName());
@@ -54,31 +55,36 @@ public class RoutineDetailsActivity extends AppCompatActivity {
         return null;
     }
 
-    private void loadTasks() {
-        List<Task> allTasks = dataManager.getTasks();
-        List<Task> relatedTasks = new ArrayList<>();
+    private void loadHistory() {
+        List<RoutineHistory> history = currentRoutine.getHistory();
 
-        for (Task task : allTasks) {
-            if (task.getRoutineId().equals(currentRoutine.getId())) {
-                relatedTasks.add(task);
+        if (history == null || history.isEmpty()) {
+            historyContainer.removeAllViews();
+            TextView noHistoryView = new TextView(this);
+            noHistoryView.setText("기록 없음");
+            noHistoryView.setTextSize(16);
+            noHistoryView.setTextColor(getResources().getColor(android.R.color.darker_gray));
+            noHistoryView.setGravity(Gravity.CENTER);
+            historyContainer.addView(noHistoryView);
+        } else {
+            historyContainer.removeAllViews();
+            for (RoutineHistory historyRecord : history) {
+                addHistoryView(historyRecord);
             }
-        }
-
-        for (Task task : relatedTasks) {
-            addTaskView(task);
         }
     }
 
-    private void addTaskView(Task task) {
-        LinearLayout taskView = (LinearLayout) getLayoutInflater()
-                .inflate(R.layout.item_task, taskContainer, false);
+    private void addHistoryView(RoutineHistory history) {
+        View historyView = getLayoutInflater().inflate(R.layout.item_routine_history, historyContainer, false);
 
-        TextView taskPeriod = taskView.findViewById(R.id.text_task_period);
-        TextView taskStatus = taskView.findViewById(R.id.text_task_status);
+        TextView periodView = historyView.findViewById(R.id.text_history_period);
+        TextView statusView = historyView.findViewById(R.id.text_history_status);
+        TextView completedAtView = historyView.findViewById(R.id.text_history_completed_at);
 
-        taskPeriod.setText("기간: " + task.getDueDate());
-        taskStatus.setText(task.isCompleted() ? "성공" : "대기중");
+        periodView.setText("기간: " + history.getStartDate() + " ~ " + history.getEndDate());
+        statusView.setText("상태: " + history.getStatus());
+        completedAtView.setText("완료 시각: " + history.getCompletedAt());
 
-        taskContainer.addView(taskView);
+        historyContainer.addView(historyView);
     }
 }

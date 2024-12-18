@@ -1,7 +1,6 @@
 package com.example.miracledays.models;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,42 +50,6 @@ public class Routine implements Serializable {
     public int getCompletionRate() {
         if (totalAttempts == 0) return 0;
         return (successfulAttempts * 100) / totalAttempts;
-    }
-
-    // 현재 날짜 기준 활성화 여부 확인
-    public boolean isActive(String currentDate) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date start = sdf.parse(startDate);
-            Date current = sdf.parse(currentDate);
-            long diffInDays = (current.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
-
-            switch (periodType) {
-                case "n일마다":
-                    return diffInDays % periodValue == 0;
-                case "주간":
-                    return diffInDays % 7 == 0;
-                case "월간":
-                    return isMonthlyActive(start, current);
-                case "연간":
-                    return isYearlyActive(start, current);
-                default:
-                    return false;
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // 월간 활성화 여부 확인
-    private boolean isMonthlyActive(Date start, Date current) {
-        return (start.getYear() == current.getYear() && start.getMonth() == current.getMonth());
-    }
-
-    // 연간 활성화 여부 확인
-    private boolean isYearlyActive(Date start, Date current) {
-        return (start.getYear() == current.getYear());
     }
 
     // Getter 메서드

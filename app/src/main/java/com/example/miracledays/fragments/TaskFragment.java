@@ -42,8 +42,7 @@ public class TaskFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        dataManager.updateTasksForAllRoutines(dataManager.getRoutines());
-        loadTasks();
+        loadTasks(); // Fragment 활성화 시 항상 Task 로드
     }
 
     private void loadTasks() {
