@@ -43,7 +43,7 @@ public class ManageFragment extends Fragment {
 
     // 데이터 초기화 기능
     private void resetData() {
-        dataManager.saveRoutines(null); // 모든 데이터 삭제
+//        dataManager.saveRoutines(null); // 모든 데이터 삭제
         Toast.makeText(getContext(), "모든 데이터가 초기화되었습니다.", Toast.LENGTH_SHORT).show();
     }
 }

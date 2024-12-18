@@ -1,0 +1,161 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 루틴 이름 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="루틴 이름:"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/edit_routine_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="루틴 이름 입력" />
+
+        <!-- 반복 주기 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="반복 주기:"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp" />
+
+        <RadioGroup
+            android:id="@+id/radio_group_period"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- 요일마다 -->
+            <RadioButton
+                android:id="@+id/radio_period_daily"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="요일마다" />
+
+            <!-- 요일 체크박스 -->
+            <LinearLayout
+                android:id="@+id/linear_days_of_week"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <CheckBox android:id="@+id/checkbox_monday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="월" />
+                <CheckBox android:id="@+id/checkbox_tuesday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="화" />
+                <CheckBox android:id="@+id/checkbox_wednesday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="수" />
+                <CheckBox android:id="@+id/checkbox_thursday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="목" />
+                <CheckBox android:id="@+id/checkbox_friday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="금" />
+                <CheckBox android:id="@+id/checkbox_saturday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="토" />
+                <CheckBox android:id="@+id/checkbox_sunday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="일" />
+            </LinearLayout>
+
+            <!-- n일마다 -->
+            <RadioButton
+                android:id="@+id/radio_period_n_days"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="n일마다" />
+
+            <LinearLayout
+                android:id="@+id/linear_n_days"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/button_n_days_minus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-" />
+
+                <TextView
+                    android:id="@+id/text_n_days"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1"
+                    android:textSize="16sp"
+                    android:padding="8dp" />
+
+                <Button
+                    android:id="@+id/button_n_days_plus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+" />
+            </LinearLayout>
+
+            <!-- 주간 -->
+            <RadioButton
+                android:id="@+id/radio_period_weekly"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="주간" />
+
+            <!-- 월간 -->
+            <RadioButton
+                android:id="@+id/radio_period_monthly"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="월간" />
+
+            <!-- 연간 -->
+            <RadioButton
+                android:id="@+id/radio_period_yearly"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="연간" />
+        </RadioGroup>
+
+        <!-- 반복 횟수 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="반복 횟수:"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_repeat_minus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-" />
+
+            <TextView
+                android:id="@+id/text_repeat_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:textSize="16sp"
+                android:padding="8dp" />
+
+            <Button
+                android:id="@+id/button_repeat_plus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+" />
+        </LinearLayout>
+
+        <!-- 확인 버튼 -->
+        <Button
+            android:id="@+id/button_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="확인"
+            android:layout_marginTop="16dp" />
+    </LinearLayout>
+</ScrollView>

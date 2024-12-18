@@ -4,28 +4,29 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.LinearLayout;
+import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.miracledays.R;
 import com.example.miracledays.models.Routine;
-import com.example.miracledays.models.RoutineHistory;
+import com.example.miracledays.models.Task;
 import com.example.miracledays.utils.DataManager;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class TaskFragment extends Fragment {
 
-    private LinearLayout taskContainer;
+    private RecyclerView taskRecyclerView;
+    private TaskAdapter taskAdapter;
     private DataManager dataManager;
 
     @Nullable
@@ -33,63 +34,99 @@ public class TaskFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_task, container, false);
 
-        taskContainer = view.findViewById(R.id.task_container);
-        dataManager = new DataManager(requireContext());
+        taskRecyclerView = view.findViewById(R.id.task_recycler_view);
+        taskRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        loadTasks();
+        dataManager = new DataManager(requireContext());
         return view;
     }
 
-    // 할 일 불러오기
+    @Override
+    public void onResume() {
+        super.onResume();
+        List<Routine> routines = dataManager.getRoutines(); // 저장된 루틴 가져오기
+        dataManager.updateTasksForAllRoutines(routines);    // 루틴 기반으로 Task 갱신
+        loadTasks();                                        // Task 목록 로드
+    }
+
+
     private void loadTasks() {
-        taskContainer.removeAllViews(); // 기존 항목 제거
-        List<Routine> routines = dataManager.getRoutines();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        String today = sdf.format(new Date());
+        List<Task> allTasks = dataManager.getTasks();
+        List<Task> currentTasks = new ArrayList<>();
 
-        for (Routine routine : routines) {
-            // 현재 주기 내의 할 일만 표시
-            RoutineHistory currentTask = getCurrentTask(routine, today);
-            if (currentTask != null && !currentTask.getStatus().equals("성공")) {
-                addTaskView(routine, currentTask);
+        String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+
+        for (Task task : allTasks) {
+            String[] period = task.getDueDate().split(" ~ ");
+            if (today.compareTo(period[0]) >= 0 && today.compareTo(period[1]) <= 0) {
+                currentTasks.add(task);
             }
         }
+
+        taskAdapter = new TaskAdapter(currentTasks);
+        taskRecyclerView.setAdapter(taskAdapter);
     }
 
-    // 현재 주기 가져오기
-    private RoutineHistory getCurrentTask(Routine routine, String today) {
-        for (RoutineHistory history : routine.getHistory()) {
-            if (history.getStartDate().compareTo(today) <= 0 && history.getEndDate().compareTo(today) >= 0) {
-                return history;
-            }
+    // Adapter class
+    private class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
+        private final List<Task> tasks;
+
+        public TaskAdapter(List<Task> tasks) {
+            this.tasks = tasks;
         }
-        return null;
-    }
 
-    // 할 일 항목 추가
-    private void addTaskView(Routine routine, RoutineHistory task) {
-        View taskView = getLayoutInflater().inflate(R.layout.item_task, null);
+        @NonNull
+        @Override
+        public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);
+            return new TaskViewHolder(view);
+        }
 
-        TextView taskName = taskView.findViewById(R.id.text_task_name);
-        CheckBox checkBox = taskView.findViewById(R.id.checkbox_task);
+        @Override
+        public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
+            Task task = tasks.get(position);
 
-        taskName.setText(routine.getName());
-        checkBox.setChecked(task.getStatus().equals("성공"));
+            holder.taskName.setText(task.getName());
+            holder.taskDueDate.setText("기간: " + task.getDueDate());
 
-        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                task.setStatus("성공");
-                task.setCompletedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(new Date()));
-                Toast.makeText(getContext(), routine.getName() + " 완료!", Toast.LENGTH_SHORT).show();
+            if (task.isCompleted()) {
+                holder.taskStatus.setText("완료됨");
+                holder.taskStatus.setEnabled(false);
             } else {
-                task.setStatus("대기중");
-                task.setCompletedAt("");
-                Toast.makeText(getContext(), routine.getName() + " 취소됨", Toast.LENGTH_SHORT).show();
-            }
-            dataManager.saveRoutines(dataManager.getRoutines());
-            loadTasks();
-        });
+                holder.taskStatus.setText("대기 중");
+                holder.taskStatus.setEnabled(true);
 
-        taskContainer.addView(taskView);
+                // 완료 처리 버튼 클릭 리스너 추가
+                holder.taskStatus.setOnClickListener(v -> {
+                    // Task 완료 처리
+                    task.setCompleted(true);
+                    new DataManager(holder.itemView.getContext()).completeTask(task);
+
+                    // 리스트에서 안전하게 제거
+                    int adapterPosition = holder.getAdapterPosition();
+                    if (adapterPosition != RecyclerView.NO_POSITION) {
+                        tasks.remove(adapterPosition);
+                        notifyDataSetChanged(); // 전체 리스트 새로고침
+                    }
+                });
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return tasks.size();
+        }
+
+        class TaskViewHolder extends RecyclerView.ViewHolder {
+            TextView taskName, taskDueDate;
+            Button taskStatus;
+
+            public TaskViewHolder(@NonNull View itemView) {
+                super(itemView);
+                taskName = itemView.findViewById(R.id.text_task_name);
+                taskDueDate = itemView.findViewById(R.id.text_task_due_date);
+                taskStatus = itemView.findViewById(R.id.button_task_complete);
+            }
+        }
     }
 }

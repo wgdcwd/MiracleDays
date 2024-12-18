@@ -1,19 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="8dp">
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="@android:color/white"
+    android:layout_marginBottom="8dp"
+    android:elevation="2dp">
 
+    <!-- 할 일 이름 -->
     <TextView
         android:id="@+id/text_task_name"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:text="할 일 이름"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingBottom="4dp" />
 
-    <CheckBox
-        android:id="@+id/checkbox_task"
+    <!-- 할 일 기한 -->
+    <TextView
+        android:id="@+id/text_task_due_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="기한: YYYY-MM-DD"
+        android:textSize="14sp"
+        android:paddingBottom="4dp" />
+
+    <!-- 완료 버튼 -->
+    <Button
+        android:id="@+id/button_task_complete"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="완료하기"
+        android:padding="8dp" />
 </LinearLayout>
