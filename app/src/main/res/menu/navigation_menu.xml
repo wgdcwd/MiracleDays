@@ -1,5 +1,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/navigation_task" android:title="할 일" />
     <item android:id="@+id/navigation_routine" android:title="루틴" />
-    <item android:id="@+id/navigation_manage" android:title="관리" />
 </menu>

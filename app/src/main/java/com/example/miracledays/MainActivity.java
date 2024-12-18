@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         // 버튼 설정
         Button btnTask = findViewById(R.id.btn_task);
         Button btnRoutine = findViewById(R.id.btn_routine);
-        Button btnManage = findViewById(R.id.btn_manage);
+
 
         // 버튼 클릭 이벤트 처리
         btnTask.setOnClickListener(v -> {
@@ -45,12 +45,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnManage.setOnClickListener(v -> {
-            if (!(currentFragment instanceof ManageFragment)) {
-                currentFragment = new ManageFragment();
-                loadFragment(currentFragment);
-            }
-        });
     }
 
     // Fragment 교체 메서드

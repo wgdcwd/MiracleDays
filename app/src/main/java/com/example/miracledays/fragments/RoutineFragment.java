@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.miracledays.R;
 import com.example.miracledays.RoutineAddActivity;
-import com.example.miracledays.RoutineDetailsActivity;
 import com.example.miracledays.models.Routine;
 import com.example.miracledays.utils.DataManager;
 
@@ -60,7 +59,6 @@ public class RoutineFragment extends Fragment {
     }
 
     private void addRoutineView(Routine routine) {
-        // 루틴 항목 레이아웃
         View routineView = getLayoutInflater().inflate(R.layout.item_routine, routineContainer, false);
 
         TextView routineName = routineView.findViewById(R.id.text_routine_name);
@@ -69,11 +67,10 @@ public class RoutineFragment extends Fragment {
         routineName.setText(routine.getName());
         routineDetails.setText(routine.getPeriodType() + " - 반복 " + routine.getRepeatCount() + "회");
 
-        // 클릭 시 버튼 탭 추가
         routineView.setOnClickListener(v -> toggleButtonTab(routineView, routine));
-
         routineContainer.addView(routineView);
     }
+
 
     private void toggleButtonTab(View routineView, Routine routine) {
         // 기존 버튼 탭 제거
@@ -85,11 +82,9 @@ public class RoutineFragment extends Fragment {
         // 버튼 탭 동적 추가
         View buttonTab = getLayoutInflater().inflate(R.layout.button_tab_routine, routineContainer, false);
 
-        TextView buttonDetails = buttonTab.findViewById(R.id.button_details);
         TextView buttonDelete = buttonTab.findViewById(R.id.button_delete);
 
         // 버튼 이벤트 설정
-        buttonDetails.setOnClickListener(v -> showDetails(routine));
         buttonDelete.setOnClickListener(v -> deleteRoutine(routine));
 
         // 버튼 탭을 루틴 항목 아래에 추가
@@ -98,12 +93,6 @@ public class RoutineFragment extends Fragment {
         currentButtonTab = buttonTab;
     }
 
-    private void showDetails(Routine routine) {
-        // 상세보기 기능 구현
-        Intent intent = new Intent(requireContext(), RoutineDetailsActivity.class);
-        intent.putExtra("routine_id", routine.getId());
-        startActivity(intent);
-    }
 
     private void deleteRoutine(Routine routine) {
         // 루틴 삭제 처리
