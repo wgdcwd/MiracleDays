@@ -153,10 +153,14 @@ public class RoutineAddActivity extends AppCompatActivity {
                 repeatCount
         );
 
-        // 기존 Task 삭제 및 새로운 Task 저장
-        List<Task> tasks = TaskGenerator.generateTasksFromRoutine(newRoutine, getCurrentDate());
-        dataManager.removeTasksByRoutineId(newRoutine.getId()); // 기존 Task 삭제
-        dataManager.saveTasks(tasks); // 새로운 Task 저장
+        // Task 생성 및 저장
+        List<Task> existingTasks = dataManager.getTasks();       // 현재 저장된 Task
+        List<Task> completedTasks = dataManager.getCompletedTasks(); // 완료된 Task
+        List<Task> newTasks = TaskGenerator.generateTasksFromRoutine(newRoutine, getCurrentDate(), existingTasks, completedTasks);
+
+        // 기존 루틴과 연관된 Task 제거
+        dataManager.removeTasksByRoutineId(newRoutine.getId()); // Task 삭제
+        dataManager.saveTasks(newTasks); // 새로운 Task 저장
 
         // 루틴 저장
         List<Routine> routines = dataManager.getRoutines();
@@ -166,4 +170,5 @@ public class RoutineAddActivity extends AppCompatActivity {
         Toast.makeText(this, "루틴이 추가되었습니다.", Toast.LENGTH_SHORT).show();
         finish();
     }
+
 }

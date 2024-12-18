@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,9 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.miracledays.R;
-import com.example.miracledays.models.Routine;
 import com.example.miracledays.models.Task;
 import com.example.miracledays.utils.DataManager;
+import com.example.miracledays.utils.TaskAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,11 +42,9 @@ public class TaskFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        List<Routine> routines = dataManager.getRoutines(); // 저장된 루틴 가져오기
-        dataManager.updateTasksForAllRoutines(routines);    // 루틴 기반으로 Task 갱신
-        loadTasks();                                        // Task 목록 로드
+        dataManager.updateTasksForAllRoutines(dataManager.getRoutines());
+        loadTasks();
     }
-
 
     private void loadTasks() {
         List<Task> allTasks = dataManager.getTasks();
@@ -63,70 +59,21 @@ public class TaskFragment extends Fragment {
             }
         }
 
-        taskAdapter = new TaskAdapter(currentTasks);
+        if (currentTasks.isEmpty()) {
+            // 디버깅용 로그 추가
+            System.out.println("현재 Task 없음. allTasks 크기: " + allTasks.size());
+            for (Task task : allTasks) {
+                System.out.println("Task ID: " + task.getId() + ", 기간: " + task.getDueDate());
+            }
+        }
+
+        // enableCompleteButton 값을 true로 설정
+        boolean enableCompleteButton = true;
+
+        // TaskAdapter 생성 시 세 개의 파라미터 전달
+        taskAdapter = new TaskAdapter(currentTasks, dataManager, enableCompleteButton);
         taskRecyclerView.setAdapter(taskAdapter);
     }
 
-    // Adapter class
-    private class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
-        private final List<Task> tasks;
 
-        public TaskAdapter(List<Task> tasks) {
-            this.tasks = tasks;
-        }
-
-        @NonNull
-        @Override
-        public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);
-            return new TaskViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-            Task task = tasks.get(position);
-
-            holder.taskName.setText(task.getName());
-            holder.taskDueDate.setText("기간: " + task.getDueDate());
-
-            if (task.isCompleted()) {
-                holder.taskStatus.setText("완료됨");
-                holder.taskStatus.setEnabled(false);
-            } else {
-                holder.taskStatus.setText("대기 중");
-                holder.taskStatus.setEnabled(true);
-
-                // 완료 처리 버튼 클릭 리스너 추가
-                holder.taskStatus.setOnClickListener(v -> {
-                    // Task 완료 처리
-                    task.setCompleted(true);
-                    new DataManager(holder.itemView.getContext()).completeTask(task);
-
-                    // 리스트에서 안전하게 제거
-                    int adapterPosition = holder.getAdapterPosition();
-                    if (adapterPosition != RecyclerView.NO_POSITION) {
-                        tasks.remove(adapterPosition);
-                        notifyDataSetChanged(); // 전체 리스트 새로고침
-                    }
-                });
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return tasks.size();
-        }
-
-        class TaskViewHolder extends RecyclerView.ViewHolder {
-            TextView taskName, taskDueDate;
-            Button taskStatus;
-
-            public TaskViewHolder(@NonNull View itemView) {
-                super(itemView);
-                taskName = itemView.findViewById(R.id.text_task_name);
-                taskDueDate = itemView.findViewById(R.id.text_task_due_date);
-                taskStatus = itemView.findViewById(R.id.button_task_complete);
-            }
-        }
-    }
 }

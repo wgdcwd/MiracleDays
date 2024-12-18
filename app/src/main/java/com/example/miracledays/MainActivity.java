@@ -12,6 +12,8 @@ import com.example.miracledays.fragments.ManageFragment;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Fragment currentFragment; // 현재 표시 중인 Fragment
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,7 +21,8 @@ public class MainActivity extends AppCompatActivity {
 
         // 초기 화면 설정
         if (savedInstanceState == null) {
-            loadFragment(new TaskFragment());
+            currentFragment = new TaskFragment(); // 초기화
+            loadFragment(currentFragment);
         }
 
         // 버튼 설정
@@ -28,9 +31,26 @@ public class MainActivity extends AppCompatActivity {
         Button btnManage = findViewById(R.id.btn_manage);
 
         // 버튼 클릭 이벤트 처리
-        btnTask.setOnClickListener(v -> loadFragment(new TaskFragment()));
-        btnRoutine.setOnClickListener(v -> loadFragment(new RoutineFragment()));
-        btnManage.setOnClickListener(v -> loadFragment(new ManageFragment()));
+        btnTask.setOnClickListener(v -> {
+            if (!(currentFragment instanceof TaskFragment)) {
+                currentFragment = new TaskFragment();
+                loadFragment(currentFragment);
+            }
+        });
+
+        btnRoutine.setOnClickListener(v -> {
+            if (!(currentFragment instanceof RoutineFragment)) {
+                currentFragment = new RoutineFragment();
+                loadFragment(currentFragment);
+            }
+        });
+
+        btnManage.setOnClickListener(v -> {
+            if (!(currentFragment instanceof ManageFragment)) {
+                currentFragment = new ManageFragment();
+                loadFragment(currentFragment);
+            }
+        });
     }
 
     // Fragment 교체 메서드

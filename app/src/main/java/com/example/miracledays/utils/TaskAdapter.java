@@ -15,11 +15,13 @@ import java.util.List;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
     private final List<Task> tasks;
-    private final boolean enableCompleteButton;
+    private final DataManager dataManager;
+    private final boolean enableCompleteButton; // 버튼 활성화 여부
 
-    public TaskAdapter(List<Task> tasks, boolean enableCompleteButton) {
+    public TaskAdapter(List<Task> tasks, DataManager dataManager, boolean enableCompleteButton) {
         this.tasks = tasks;
-        this.enableCompleteButton = enableCompleteButton;
+        this.dataManager = dataManager;
+        this.enableCompleteButton = enableCompleteButton; // 활성화 여부 설정
     }
 
     @NonNull
@@ -41,33 +43,28 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             holder.taskStatus.setEnabled(false);
         } else {
             holder.taskStatus.setText("대기 중");
-            holder.taskStatus.setEnabled(true);
+            holder.taskStatus.setEnabled(enableCompleteButton);
 
-            // 완료 처리 버튼 클릭 리스너 추가
-            holder.taskStatus.setOnClickListener(v -> {
-                // Task 완료 처리
-                task.setCompleted(true);
-                new DataManager(holder.itemView.getContext()).completeTask(task);
+            if (enableCompleteButton) {
+                holder.taskStatus.setOnClickListener(v -> {
+                    // Task 완료 처리
+                    task.setCompleted(true);
+                    dataManager.completeTask(task);
 
-                // 리스트에서 안전하게 제거
-                int adapterPosition = holder.getAdapterPosition();
-                if (adapterPosition != RecyclerView.NO_POSITION) {
-                    tasks.remove(adapterPosition);
-                    notifyDataSetChanged(); // 전체 리스트 새로고침
-                }
-            });
+                    // RecyclerView 업데이트
+                    tasks.remove(position);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, tasks.size());
+                });
+            }
         }
     }
-
-
-
 
     @Override
     public int getItemCount() {
         return tasks.size();
     }
 
-    // ViewHolder 클래스
     static class TaskViewHolder extends RecyclerView.ViewHolder {
         TextView taskName, taskDueDate, taskStatus;
 

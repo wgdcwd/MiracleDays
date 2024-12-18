@@ -28,43 +28,43 @@ public class DataManager {
         gson = new Gson();
     }
 
-    // 1. 루틴 가져오기
+    // 루틴 가져오기
     public List<Routine> getRoutines() {
         String routinesJson = sharedPreferences.getString(ROUTINES_KEY, "");
         return routinesJson.isEmpty() ? new ArrayList<>() :
                 gson.fromJson(routinesJson, new TypeToken<List<Routine>>() {}.getType());
     }
 
-    // 2. 루틴 저장
+    // 루틴 저장
     public void saveRoutines(List<Routine> routines) {
         sharedPreferences.edit().putString(ROUTINES_KEY, gson.toJson(routines)).apply();
     }
 
-    // 3. Task 가져오기
+    // Task 가져오기
     public List<Task> getTasks() {
         String tasksJson = sharedPreferences.getString(TASKS_KEY, "");
         return tasksJson.isEmpty() ? new ArrayList<>() :
                 gson.fromJson(tasksJson, new TypeToken<List<Task>>() {}.getType());
     }
 
-    // 4. Task 저장
+    // Task 저장
     public void saveTasks(List<Task> tasks) {
         sharedPreferences.edit().putString(TASKS_KEY, gson.toJson(tasks)).apply();
     }
 
-    // 5. 완료된 Task 가져오기
+    // 완료된 Task 가져오기
     public List<Task> getCompletedTasks() {
         String completedTasksJson = sharedPreferences.getString(COMPLETED_TASKS_KEY, "");
         return completedTasksJson.isEmpty() ? new ArrayList<>() :
                 gson.fromJson(completedTasksJson, new TypeToken<List<Task>>() {}.getType());
     }
 
-    // 6. 완료된 Task 저장
+    // 완료된 Task 저장
     public void saveCompletedTasks(List<Task> completedTasks) {
         sharedPreferences.edit().putString(COMPLETED_TASKS_KEY, gson.toJson(completedTasks)).apply();
     }
 
-    // 7. Task 완료 처리
+    // Task 완료 처리
     public void completeTask(Task task) {
         List<Task> tasks = getTasks();
         tasks.removeIf(t -> t.getId().equals(task.getId()));
@@ -75,7 +75,7 @@ public class DataManager {
         saveCompletedTasks(completedTasks);
     }
 
-    // 8. 특정 루틴 ID의 Task 제거
+    // 특정 루틴 ID의 Task 제거
     public void removeTasksByRoutineId(String routineId) {
         List<Task> tasks = getTasks();
         tasks.removeIf(task -> task.getRoutineId().equals(routineId));
@@ -86,28 +86,29 @@ public class DataManager {
         saveCompletedTasks(completedTasks);
     }
 
-    // 9. 특정 루틴의 Task 갱신
-    public void updateTasksForRoutine(Routine routine) {
-        List<Task> tasks = getTasks();
+//    // 특정 루틴의 Task 갱신
+//    public void updateTasksForRoutine(Routine routine) {
+//        List<Task> tasks = getTasks();
+//        tasks.removeIf(task -> task.getRoutineId().equals(routine.getId()));
+//        tasks.addAll(TaskGenerator.generateTasksFromRoutine(routine, getCurrentDate()));
+//        saveTasks(tasks);
+//    }
 
-        // 기존 Task 삭제
-        tasks.removeIf(task -> task.getRoutineId().equals(routine.getId()));
-
-        // 새로운 Task 추가
-        tasks.addAll(TaskGenerator.generateTasksFromRoutine(routine, getCurrentDate()));
-        saveTasks(tasks);
-    }
-
-    // 10. 모든 루틴의 Task 갱신
+    // 모든 루틴의 Task 갱신
     public void updateTasksForAllRoutines(List<Routine> routines) {
         List<Task> allTasks = new ArrayList<>();
+        List<Task> existingTasks = getTasks();
+        List<Task> completedTasks = getCompletedTasks();
+
         for (Routine routine : routines) {
-            allTasks.addAll(TaskGenerator.generateTasksFromRoutine(routine, getCurrentDate()));
+            allTasks.addAll(TaskGenerator.generateTasksFromRoutine(routine, getCurrentDate(), existingTasks, completedTasks));
         }
+
         saveTasks(allTasks);
     }
 
-    // 11. 오래된 Task 제거
+
+    // 오래된 Task 제거
     public void cleanupOldTasks(String cutoffDate) {
         List<Task> tasks = getTasks();
         tasks.removeIf(task -> task.getDueDate().compareTo(cutoffDate) < 0);

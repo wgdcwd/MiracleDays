@@ -67,9 +67,9 @@ public class Routine implements Serializable {
                 case "주간":
                     return diffInDays % 7 == 0;
                 case "월간":
-                    return diffInDays % 30 == 0; // 월 단위 (대략적 계산)
+                    return isMonthlyActive(start, current);
                 case "연간":
-                    return diffInDays % 365 == 0; // 연간
+                    return isYearlyActive(start, current);
                 default:
                     return false;
             }
@@ -77,6 +77,16 @@ public class Routine implements Serializable {
             e.printStackTrace();
         }
         return false;
+    }
+
+    // 월간 활성화 여부 확인
+    private boolean isMonthlyActive(Date start, Date current) {
+        return (start.getYear() == current.getYear() && start.getMonth() == current.getMonth());
+    }
+
+    // 연간 활성화 여부 확인
+    private boolean isYearlyActive(Date start, Date current) {
+        return (start.getYear() == current.getYear());
     }
 
     // Getter 메서드
